@@ -22,7 +22,7 @@ pipeline {
 
         stage('Tests') {
             steps {
-                bat 'npx jest --detectOpenHandles' // Utiliser sh si l'agent est sous Linux
+                bat 'npx jest --forceExit --detectOpenHandles' // Utiliser sh si l'agent est sous Linux
             }
         }
 
