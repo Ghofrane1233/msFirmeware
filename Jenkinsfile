@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Cloner le dépôt Git') {
             steps {
-                git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/Ghofrane1233/msclient.git', branch: 'main'
+                git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/Ghofrane1233/msFirmeware.git', branch: 'main'
             }
         }
 
