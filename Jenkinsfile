@@ -59,23 +59,25 @@ pipeline {
                 }
             }
         }
-    }
-stage('Deploy Monitoring Stack') {
-    steps {
-        script {
-            withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://172.27.157.229:8443']) {
-                // Déployer Prometheus
-                bat 'kubectl apply -f monitoring/prometheus-config.yaml'
-                bat 'kubectl apply -f monitoring/prometheus-deployment.yaml'
-                bat 'kubectl apply -f monitoring/prometheus-service.yaml'
 
-                // Déployer Grafana
-                bat 'kubectl apply -f monitoring/grafana-deployment.yaml'
-                bat 'kubectl apply -f monitoring/grafana-service.yaml'
+        // ✅ Cette section a été déplacée ici
+        stage('Deploy Monitoring Stack') {
+            steps {
+                script {
+                    withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://172.27.157.229:8443']) {
+                        // Déployer Prometheus
+                        bat 'kubectl apply -f monitoring/prometheus-config.yaml'
+                        bat 'kubectl apply -f monitoring/prometheus-deployment.yaml'
+                        bat 'kubectl apply -f monitoring/prometheus-service.yaml'
+
+                        // Déployer Grafana
+                        bat 'kubectl apply -f monitoring/grafana-deployment.yaml'
+                        bat 'kubectl apply -f monitoring/grafana-service.yaml'
+                    }
+                }
             }
         }
     }
-}
 
     post {
         success {
