@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: msFirmeware
+  name: msfirmeware
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: msFirmeware
+      app: msfirmeware
   template:
     metadata:
       labels:
-        app: msFirmeware
+        app: msfirmeware
     spec:
       containers:
-      - name: msFirmeware
-        image: ghofrane694/msFirmeware:latest
+      - name: msfirmeware
+        image: ghofrane694/msfirmeware:latest
         ports:
         - containerPort: 5005
