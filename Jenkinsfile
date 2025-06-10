@@ -8,69 +8,62 @@ pipeline {
     }
 
     stages {
-        stage('Cloner le dépôt Git') {
+
+        stage('📥 Cloner le dépôt Git') {
             steps {
                 git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/Ghofrane1233/msFirmeware.git', branch: 'main'
             }
         }
 
-        stage('Installation des dépendances') {
+        stage('📦 Installer les dépendances') {
             steps {
-                bat 'npm install' // Utiliser sh si l'agent est sous Linux
+                bat 'npm install'
             }
         }
 
-        stage('Tests') {
+        stage('🧪 Exécuter les tests') {
             steps {
-                bat 'npx jest --forceExit --detectOpenHandles' // Utiliser sh si l'agent est sous Linux
+                bat 'npx jest --forceExit --detectOpenHandles'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('🐳 Build de l\'image Docker') {
             steps {
                 script {
-                    env.BUILT_IMAGE_ID = docker.build(env.DOCKER_IMAGE).id
+                    env.BUILT_IMAGE_ID = docker.build("${DOCKER_IMAGE}").id
                 }
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('📤 Push vers Docker Hub') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', env.REGISTRY_CREDENTIALS_ID) {
-                        docker.image(env.DOCKER_IMAGE).push("latest")
+                    docker.withRegistry('https://index.docker.io/v1/', "${REGISTRY_CREDENTIALS_ID}") {
+                        docker.image("${DOCKER_IMAGE}").push("latest")
                     }
                 }
             }
         }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    try {
-                        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://127.0.0.1:52747']) {
-                            bat 'kubectl apply -f db-secret.yaml --validate=false'
-                            bat 'kubectl apply -f k8s/deployment.yaml --validate=false'
-                            bat 'kubectl apply -f k8s/service.yaml --validate=false'
-                        }
-                    } catch (Exception e) {
-                        error "Kubernetes deployment failed: ${e.getMessage()}"
-                    }
-                }
-            }
-        }
-
-        // ✅ Cette section a été déplacée ici
-        stage('Deploy Monitoring Stack') {
+        stage('🚀 Déploiement sur Kubernetes') {
             steps {
                 script {
                     withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://127.0.0.1:52747']) {
-                        // Déployer Prometheus
+                        bat 'kubectl apply -f db-secret.yaml --validate=false'
+                        bat 'kubectl apply -f k8s/deployment.yaml --validate=false'
+                        bat 'kubectl apply -f k8s/service.yaml --validate=false'
+                    }
+                }
+            }
+        }
+
+        stage('📊 Déploiement de la stack de monitoring') {
+            steps {
+                script {
+                    withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://127.0.0.1:52747']) {
                         bat 'kubectl apply -f monitoring/prometheus-config.yaml'
                         bat 'kubectl apply -f monitoring/prometheus-deployment.yaml'
                         bat 'kubectl apply -f monitoring/prometheus-service.yaml'
-
-                        // Déployer Grafana
                         bat 'kubectl apply -f monitoring/grafana-deployment.yaml'
                         bat 'kubectl apply -f monitoring/grafana-service.yaml'
                     }
