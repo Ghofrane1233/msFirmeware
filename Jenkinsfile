@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "ghofrane694/msdocument"
+        DOCKER_IMAGE = "ghofrane694/msfirmeware"
         REGISTRY_CREDENTIALS_ID = 'docker-hub-credentials-id'
         GIT_CREDENTIALS_ID = 'git-credentials-id'
     }
